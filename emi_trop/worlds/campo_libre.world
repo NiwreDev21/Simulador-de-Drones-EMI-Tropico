@@ -1,0 +1,127 @@
+<?xml version="1.0" ?> <!-- Archivo XML estándar -->
+<sdf version="1.5"> <!-- Formato SDF versión 1.5 -->
+  <world name="tropical_world"> <!-- Nombre del mundo -->
+
+    <!-- ===================== -->
+    <!-- FÍSICA -->
+    <!-- ===================== -->
+    <physics type="ode">
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>300</iters>
+          <sor>1.0</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.9</erp>
+          <contact_max_correcting_vel>0.1</contact_max_correcting_vel>
+          <contact_surface_layer>0.0</contact_surface_layer>
+        </constraints>
+      </ode>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+    </physics>
+
+    <!-- ===================== -->
+    <!-- CÁMARA -->
+    <!-- ===================== -->
+    <gui>
+      <camera name="user_camera">
+        <pose>-85 -36 2 0 0.09 0.6</pose>
+      </camera>
+    </gui>
+
+    <!-- ===================== -->
+    <!-- ESCENA TROPICAL -->
+    <!-- ===================== -->
+    <scene>
+      <sky>
+        <clouds>
+          <speed>4</speed> <!-- Nubes moviéndose más rápido (viento tropical 15 km/h aprox) -->
+          <direction>-0.5 1</direction> <!-- Viento diagonal noreste -->
+          <mean_size>0.8</mean_size> <!-- Nubes más grandes -->
+          <humidity>0.85</humidity> <!-- Humedad alta (85%) típica del trópico -->
+        </clouds>
+      </sky>
+
+      <!-- Viento base constante -->
+      <wind>
+        <linear_velocity>4 2 0</linear_velocity> <!-- Viento promedio 4 m/s en X y 2 m/s en Y -->
+      </wind>
+
+      <!-- Plugin para viento dinámico -->
+      <plugin name="dynamic_wind" filename="libgazebo_wind_plugin.so">
+        <mean_wind>4 2 0</mean_wind> <!-- Viento promedio tropical -->
+        <turbulence>2 1 0</turbulence> <!-- Ráfagas moderadas -->
+        <frequency>0.5</frequency> <!-- Cambios cada ~2 segundos -->
+      </plugin>
+
+      <ambient>0.65 0.65 0.55 1</ambient> <!-- Luz ambiental cálida -->
+      <background>0.7 0.9 1 1</background> <!-- Cielo muy azul y brillante -->
+      <shadows>false</shadows> <!-- Activar sombras (sol fuerte) -->
+    </scene>
+
+    <!-- ===================== -->
+    <!-- TERRENO -->
+    <!-- ===================== -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>5000 5000</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.9</mu> <!-- Un poco más resbaladizo por humedad -->
+                <mu2>0.9</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+
+        <!-- Apariencia visual -->
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.5 0.7 0.3 1</ambient> <!-- Verde más intenso -->
+            <diffuse>0.5 0.7 0.3 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===================== -->
+    <!-- MODELOS EXTRA -->
+    <!-- ===================== -->
+
+    <!-- Sol -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Campo libre -->
+    <include>
+      <uri>model://campo_libre</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Drone con cámara -->
+    <include>
+      <uri>model://drone_with_camera</uri>
+      <pose>-80 -33 0.82 0 0 0</pose>
+    </include>
+
+  </world>
+</sdf>
